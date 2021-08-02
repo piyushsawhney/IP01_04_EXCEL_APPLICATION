@@ -1,5 +1,5 @@
 from openpyxl.styles import Font
-from openpyxl.styles.numbers import FORMAT_NUMBER_00, FORMAT_DATE_XLSX15
+from openpyxl.styles.numbers import FORMAT_NUMBER_00, FORMAT_PERCENTAGE_00
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.dimensions import ColumnDimension
 
@@ -18,14 +18,22 @@ def create_transaction_sheet():
 
 
 def update_transaction_sheet(summary_details, transactions):
+    date_gross_list_of_tupple = []
     transaction = wb["Transactions"]
     transaction.append((summary_details[1],))
     for transaction_tupple in transactions:
         transaction.append((transaction_tupple))
+        date_gross_list_of_tupple.append((transaction_tupple[0], transaction_tupple[4]))
     transaction.append(())
-    transaction.append(("", "Current NAV: ", summary_details[8], "Left Over Cost: ", ""))
-    transaction.append(("", "NAV Date: ", summary_details[7], "Current Value: ", summary_details[4]))
+    transaction.append(
+        ("Current NAV: ", summary_details[10], "Current Value: ", summary_details[6], "XIRR: ", summary_details[8]))
+    transaction.cell(row=transaction.max_row, column=transaction.max_column).number_format = FORMAT_PERCENTAGE_00
+    transaction.append(
+        ("NAV Date: ", summary_details[9], "Cost Value: ", summary_details[2], "Redemptions : ", summary_details[3]))
+    transaction.append(
+        ("", "", "Switch In: ", summary_details[4], "Switch Out: ", summary_details[5]))
     transaction.append(())
+    return date_gross_list_of_tupple
 
 
 def finish_transaction_page():

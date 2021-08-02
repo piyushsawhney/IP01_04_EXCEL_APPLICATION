@@ -1,5 +1,8 @@
 {
-  "schema": "",
+  "mf_client_schema": "",
+  "rta_schema": "",
   "transaction_table" : "",
+  "folio_table" : "",
+  "cost_table" : "",
   "nav_table" : ""
 }

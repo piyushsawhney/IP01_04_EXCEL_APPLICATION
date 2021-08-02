@@ -1,7 +1,6 @@
 import datetime
 
 import pandas as pd
-import xirr
 
 import database
 import financial_functions
@@ -13,7 +12,7 @@ def group_transactions(list):
     for transaction_type in list:
         my_dict[transaction_type[0]] = {}
         my_dict[transaction_type[0]]['amount'] = transaction_type[1]
-        my_dict[transaction_type[0]]['units'] = transaction_type[1]
+        my_dict[transaction_type[0]]['units'] = transaction_type[2]
     return my_dict
 
 
@@ -59,12 +58,51 @@ def get_folio_scheme_summary(scheme_code, folio_no, list_of_tuple):
             nav_date = scheme_details[0][2]
 
     cost_value = groupings['P']['amount'] if 'P' in groupings.keys() and 'amount' in groupings['P'].keys() else 0
+    purchase_rejection = groupings['PR']['amount'] if 'PR' in groupings.keys() and 'amount' in groupings[
+        'PR'].keys() else 0
     redemption_value = groupings['R']['amount'] if 'R' in groupings.keys() and 'amount' in groupings['R'].keys() else 0
     df = pd.DataFrame(list_of_tuple, columns=["date", "transaction_prefix", "units", "nav", "gross_amount", "units"])
     df['amount'] = df['gross_amount'].astype(float)
 
     # FOLIO Number, Scheme Name, Cost Value, Redemptions, Current Value, Total Units, Returns, Nav Date, Current NAV
     return (
-        scheme_details_with_units[0], scheme_name[0], cost_value, redemption_value, current_value,
+        scheme_details_with_units[0], scheme_name[0], cost_value + purchase_rejection, redemption_value, current_value,
         scheme_details_with_units[2],
+        financial_functions.xirr(df), nav_date, current_nav)
+
+
+def get_folio_summary(scheme_code, folio_number, scheme_name, unit_balance, list_of_tuple):
+    statement_1 = sql_scripts.FOLIO_COST_VALUE.replace('(folioNumber)', folio_number).replace(
+        '(schemeCode)', scheme_code)
+    statement_2 = sql_scripts.NAV_DETAILS.replace(
+        '(schemeCode)', scheme_code)
+    statement_3 = sql_scripts.FOLIO_REDEMPTION_VALUE.replace('(folioNumber)', folio_number).replace(
+        '(schemeCode)', scheme_code)
+    statement_4 = sql_scripts.FOLIO_SWITCH_IN_VALUE.replace('(folioNumber)', folio_number).replace(
+        '(schemeCode)', scheme_code)
+    statement_5 = sql_scripts.FOLIO_SWITCH_OUT_VALUE.replace('(folioNumber)', folio_number).replace(
+        '(schemeCode)', scheme_code)
+
+    cost_value = database.execute_query(statement_1)[0][0]
+    redemption_value = database.execute_query(statement_3)[0][0]
+    switch_in_value = database.execute_query(statement_4)[0][0]
+    switch_out_value = database.execute_query(statement_5)[0][0]
+    nav_details = database.execute_query(statement_2)
+    current_value = 0
+    current_nav = None
+    nav_date = None
+    if nav_details is not None and len(nav_details) > 0:
+        current_nav = nav_details[0][1]
+        nav_date = nav_details[0][2]
+        current_value = calculate_current_value(nav_details[0][1], unit_balance)
+        xirr_last_row = (datetime.date.today(), None, None, None, -float(current_value), None)
+        list_of_tuple.append(xirr_last_row)
+    df = pd.DataFrame(list_of_tuple,
+                      columns=["date", "transaction_prefix", "units", "nav", "gross_amount", "units"])
+    df['amount'] = df['gross_amount'].astype(float)
+    # FOLIO Number, Scheme Name, Cost Value, Redemptions, Switch In, Switch Out, Current Value, Total Units, Returns, Nav Date, Current NAV
+    return (
+        folio_number, scheme_name, cost_value if cost_value else 0.0, redemption_value if redemption_value else 0.0,
+        switch_in_value if switch_in_value else 0.0,
+        switch_out_value if switch_out_value else 0.0, current_value, unit_balance,
         financial_functions.xirr(df), nav_date, current_nav)
