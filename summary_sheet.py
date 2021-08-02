@@ -38,8 +38,8 @@ def finish_summary_page(xirr):
     ws.cell(row=max_row + 2, column=3).value = f"=SUM(C5:C{max_row})"
     ws.cell(row=max_row + 2, column=4).value = f"=SUM(D5:D{max_row})"
     ws.cell(row=max_row + 2, column=5).value = f"=SUM(E5:E{max_row})"
-    ws.cell(row=max_row + 2, column=6).value = f"=SUM(F5:E{max_row})"
-    ws.cell(row=max_row + 2, column=7).value = f"=SUM(G5:E{max_row})"
+    ws.cell(row=max_row + 2, column=6).value = f"=SUM(F5:F{max_row})"
+    ws.cell(row=max_row + 2, column=7).value = f"=SUM(G5:G{max_row})"
     ws.cell(row=max_row + 2, column=9).value = xirr
     for row in range(5, ws.max_row + 1):
         ws.cell(row=row, column=1).number_format = FORMAT_NUMBER_00
