@@ -8,7 +8,8 @@ import sql_scripts
 import summary_sheet
 import transaction_sheet
 from database import execute_query
-from process_transactions import get_folio_transactions, get_folio_summary
+from process_transactions import get_folio_transactions, get_folio_summary, get_folio_systematic_plans
+import systematic_sheet
 from workbook import save_workbook
 
 
@@ -17,6 +18,7 @@ def generate_statement(pan, name):
     distinct_schemes = execute_query(statement)
     summary_sheet.create_summary_sheet(pan, name)
     transaction_sheet.create_transaction_sheet()
+    systematic_sheet.create_systematic_sheet()
     total_current_value = 0
     list_of_transactions = []
     for scheme in distinct_schemes:
@@ -27,6 +29,7 @@ def generate_statement(pan, name):
         list_of_tupple = transaction_sheet.update_transaction_sheet(summary, transactions)
         list_of_transactions = list_of_tupple + list_of_transactions
         total_current_value = total_current_value + summary[6]
+        systematic_sheet.update_systematic_sheet(get_folio_systematic_plans(scheme[0], scheme[1]))
     print(total_current_value)
     list_of_transactions.append((datetime.date.today(), -total_current_value))
     df = pd.DataFrame(list_of_transactions,
@@ -36,6 +39,7 @@ def generate_statement(pan, name):
     summary_sheet.finish_summary_page(financial_functions.xirr(df))
 
     transaction_sheet.finish_transaction_page()
+    systematic_sheet.finish_systematic_page()
     save_workbook(pan)
     return True
 
