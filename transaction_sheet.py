@@ -1,5 +1,5 @@
 from openpyxl.styles import Font
-from openpyxl.styles.numbers import FORMAT_NUMBER_00, FORMAT_PERCENTAGE_00
+from openpyxl.styles.numbers import FORMAT_NUMBER_00, FORMAT_PERCENTAGE_00, FORMAT_DATE_DDMMYY
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.dimensions import ColumnDimension
 
@@ -13,8 +13,10 @@ def create_transaction_sheet():
     ColumnDimension(transaction, bestFit=True)
     transaction.append(
         (("NAV Date", "Transaction Type", "Units", "NAV", "Amount", "Total Units")))
-    row = transaction.row_dimensions[transaction.max_row]
-    row.font = Font(bold=True)
+    max_row = f"{transaction.max_row}:{transaction.max_row}"
+    for cell in transaction[max_row]:
+        cell.font = Font(bold=True)
+    transaction.freeze_panes = "A2"
 
 
 def update_transaction_sheet(summary_details, transactions):
@@ -42,6 +44,7 @@ def finish_transaction_page():
     ws.page_setup.fitToWidth = 1
     for row in range(1, ws.max_row + 1):
         ws.cell(row=row, column=5).number_format = FORMAT_NUMBER_00
+        ws.cell(row=row, column=1).number_format = FORMAT_DATE_DDMMYY
 
     for i in range(1, ws.max_column + 1):
         letter = get_column_letter(i)

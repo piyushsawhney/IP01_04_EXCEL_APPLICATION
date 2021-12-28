@@ -30,6 +30,12 @@ def get_folio_transactions(scheme_code, folio_no):
     return database.execute_query(statement_5)
 
 
+def get_folio_systematic_plans(scheme_code, folio_no):
+    statement_1 = sql_scripts.SYSTEMATIC_DETAILS.replace('(folioNumber)', folio_no).replace(
+        '(schemeCode)', scheme_code)
+    return database.execute_query(statement_1)
+
+
 def get_folio_scheme_summary(scheme_code, folio_no, list_of_tuple):
     statement_1 = sql_scripts.CLIENT_SCHEME_UNITS.replace('(folioNumber)', folio_no).replace(
         '(schemeCode)', scheme_code)
@@ -72,6 +78,7 @@ def get_folio_scheme_summary(scheme_code, folio_no, list_of_tuple):
 
 
 def get_folio_summary(scheme_code, folio_number, scheme_name, unit_balance, list_of_tuple):
+    df = pd.DataFrame()
     statement_1 = sql_scripts.FOLIO_COST_VALUE.replace('(folioNumber)', folio_number).replace(
         '(schemeCode)', scheme_code)
     statement_2 = sql_scripts.NAV_DETAILS.replace(
@@ -95,14 +102,17 @@ def get_folio_summary(scheme_code, folio_number, scheme_name, unit_balance, list
         current_nav = nav_details[0][1]
         nav_date = nav_details[0][2]
         current_value = calculate_current_value(nav_details[0][1], unit_balance)
-        xirr_last_row = (datetime.date.today(), None, None, None, -float(current_value), None)
-        list_of_tuple.append(xirr_last_row)
-    df = pd.DataFrame(list_of_tuple,
-                      columns=["date", "transaction_prefix", "units", "nav", "gross_amount", "units"])
-    df['amount'] = df['gross_amount'].astype(float)
+        if unit_balance > 0.01:
+            xirr_last_row = (datetime.date.today(), None, None, None, -float(current_value), None)
+            list_of_tuple.append(xirr_last_row)
+    if list_of_tuple:
+        df = pd.DataFrame(list_of_tuple,
+                          columns=["date", "transaction_prefix", "units", "nav", "gross_amount", "units"])
+        df['amount'] = df['gross_amount'].astype(float)
+
     # FOLIO Number, Scheme Name, Cost Value, Redemptions, Switch In, Switch Out, Current Value, Total Units, Returns, Nav Date, Current NAV
     return (
         folio_number, scheme_name, cost_value if cost_value else 0.0, redemption_value if redemption_value else 0.0,
         switch_in_value if switch_in_value else 0.0,
         switch_out_value if switch_out_value else 0.0, current_value, unit_balance,
-        financial_functions.xirr(df), nav_date, current_nav)
+        financial_functions.xirr(df) if not df.empty else 0.0, nav_date, current_nav)

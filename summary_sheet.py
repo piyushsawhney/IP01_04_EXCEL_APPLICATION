@@ -1,3 +1,5 @@
+import datetime
+
 from openpyxl.styles import Font
 from openpyxl.styles.numbers import FORMAT_NUMBER_00, FORMAT_PERCENTAGE_00
 from openpyxl.utils import get_column_letter
@@ -12,14 +14,16 @@ def create_summary_sheet(pan, investor_name=None):
     summary = wb.active
     summary.title = "Summary"
     ColumnDimension(summary, bestFit=True)
-    summary.append(("Name", investor_name))
+    summary.append(("Name", investor_name, "","","","","", str(datetime.date.today().strftime("%d-%B-%Y"))))
     summary.append(("PAN", pan))
     summary.append(())
     summary.append(
         ("Folio Number", "Scheme Name", "Cost Value", "Redemptions", "Switch In", "Switch Out", "Current Value",
          "Total Units", "Returns"))
-    row = summary.row_dimensions[summary.max_row]
-    row.font = Font(bold=True)
+    max_row = f"{summary.max_row}:{summary.max_row}"
+    for cell in summary[max_row]:
+        cell.font = Font(bold=True)
+    summary.freeze_panes = "A5"
 
 
 def update_summary_sheet(scheme_summary_details, file_name):
