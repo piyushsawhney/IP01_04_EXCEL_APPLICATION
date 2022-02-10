@@ -26,7 +26,7 @@ CLIENT_TRANSACTION_DETAILS = f"SELECT nav_date, concat(transaction_type,transact
 
 yearly_sum = f"SELECT SUM(gross_amount) as amount, SUM(units) as units, transaction_code, to_char(nav_date, 'YYYY') as year_month FROM mf_reports.consolidated_transactions WHERE pan = '(panNumber)' GROUP BY transaction_code, year_month ORDER BY year_month;"
 
-DISTINCT_FOLIO_SCHEME_CODE = f"select f.scheme_code,f.folio_number, f.arn, f.scheme_name, f.total_units from {MF_CLIENT}.{FOLIO_TABLE} f where f.pan ilike '(panNumber)'"
+DISTINCT_FOLIO_SCHEME_CODE = f"select f.scheme_code,f.folio_number, f.arn, f.scheme_name, f.total_units from {MF_CLIENT}.{FOLIO_TABLE} f where f.pan ilike '(panNumber)' or f.guardian_pan ilike'(panNumber)'"
 FOLIO_COST_VALUE = f"SELECT sum(cost_value) from {MF_CLIENT}.{COST_TABLE} WHERE folio_number = '(folioNumber)' and scheme_code = '(schemeCode)' AND (transaction_code = 'P' OR transaction_code = 'PR')"
 FOLIO_SWITCH_IN_VALUE = f"SELECT sum(cost_value) from {MF_CLIENT}.{COST_TABLE} WHERE folio_number = '(folioNumber)' and scheme_code = '(schemeCode)' AND (transaction_code = 'SI' OR transaction_code = 'SIR')"
 FOLIO_SWITCH_OUT_VALUE = f"SELECT sum(cost_value) from {MF_CLIENT}.{COST_TABLE} WHERE folio_number = '(folioNumber)' and scheme_code = '(schemeCode)' AND (transaction_code = 'SO' OR transaction_code = 'SOR')"

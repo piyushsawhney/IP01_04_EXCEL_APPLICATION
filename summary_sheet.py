@@ -1,6 +1,6 @@
 import datetime
 
-from openpyxl.drawing import drawing, image
+from openpyxl.drawing import image
 from openpyxl.styles import Font
 from openpyxl.styles.numbers import FORMAT_NUMBER_00, FORMAT_PERCENTAGE_00
 from openpyxl.utils import get_column_letter
@@ -26,7 +26,7 @@ def create_summary_sheet(pan, investor_name=None):
     summary.append(())
     summary.append(())
     summary.append(())
-    summary.append(("Name", investor_name, "","","","","", str(datetime.date.today().strftime("%d-%B-%Y"))))
+    summary.append(("Name", investor_name, "", "", "", "", "", str(datetime.date.today().strftime("%d-%B-%Y"))))
     summary.append(("PAN", pan))
     summary.append(())
     summary.append(
@@ -35,7 +35,7 @@ def create_summary_sheet(pan, investor_name=None):
     max_row = f"{summary.max_row}:{summary.max_row}"
     for cell in summary[max_row]:
         cell.font = Font(bold=True)
-    summary.freeze_panes = "A5"
+    summary.freeze_panes = "A11"
 
 
 def update_summary_sheet(scheme_summary_details, file_name):
