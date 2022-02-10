@@ -1,5 +1,6 @@
 import datetime
 
+from openpyxl.drawing import drawing, image
 from openpyxl.styles import Font
 from openpyxl.styles.numbers import FORMAT_NUMBER_00, FORMAT_PERCENTAGE_00
 from openpyxl.utils import get_column_letter
@@ -14,6 +15,17 @@ def create_summary_sheet(pan, investor_name=None):
     summary = wb.active
     summary.title = "Summary"
     ColumnDimension(summary, bestFit=True)
+    img = image.Image('logo.png')
+    img.height = 125
+    img.width = 470
+    img.anchor = 'C1'
+    summary.add_image(img)
+    summary.append(())
+    summary.append(())
+    summary.append(())
+    summary.append(())
+    summary.append(())
+    summary.append(())
     summary.append(("Name", investor_name, "","","","","", str(datetime.date.today().strftime("%d-%B-%Y"))))
     summary.append(("PAN", pan))
     summary.append(())
