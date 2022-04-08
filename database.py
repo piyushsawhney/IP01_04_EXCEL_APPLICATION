@@ -1,9 +1,14 @@
+import json
 from configparser import ConfigParser
 
 import psycopg2
 
+db_config_path = f'config/db_config.json'
+with open(db_config_path, "r") as json_file:
+    config_file = json.load(json_file)
 
-def config(filename='D:\SourceCode\\NewSourceCode\IP01_04_EXCEL_APPLICATION\config\desktop.ini', section='postgresql'):
+
+def config(filename=config_file['config_file'], section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -35,6 +40,7 @@ except (Exception, psycopg2.DatabaseError) as error:
 def execute_query(query):
     cur.execute(query)
     return cur.fetchall()
+
 
 def insert_query(query):
     cur.execute(query)
