@@ -1,0 +1,18 @@
+{
+  "transactionCodes": {
+    "P": "Purchase",
+    "PR": "Purchase Rejection",
+    "R": "Redemption",
+    "RR": "Redemption Rejection",
+    "SI": "Switch In",
+    "SIR": "Switch In Rejection",
+    "SO": "Switch Out",
+    "SOR": "Switch Out Rejection",
+    "BO": "Bonus Units",
+    "BOR": "Bonus Units Rejection",
+    "DR": "Dividend Reinvestment",
+    "DRR": "Dividend Reinvestment Rejection",
+    "DP": "Dividend Payout",
+    "DPR": "Dividend Payout Rejection"
+  }
+}

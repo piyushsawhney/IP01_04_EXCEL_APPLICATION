@@ -22,7 +22,7 @@ CLIENT_SCHEME_UNITS = f"SELECT folio_number,scheme_code, sum(units) from {MF_CLI
 SCHEME_DETAILS = f"SELECT scheme_type, nav,nav_date,scheme_category from {RTA_SCHEMA}.{NAV_TABLE} where rta_product_code = '(schemeCode)';"
 
 CLIENT_TRANSACTION_GROUP = f"SELECT transaction_code, SUM(gross_amount) as amount, SUM(units) as units FROM {MF_CLIENT}.{TRANSACTION_TABLE} WHERE folio_number = '(folioNumber)' and scheme_code = '(schemeCode)' GROUP BY transaction_code ORDER BY transaction_code;"
-CLIENT_TRANSACTION_DETAILS = f"SELECT nav_date, concat(transaction_type,transaction_suffix), units, nav, gross_amount, sum(units) over (PARTITION BY scheme_code ORDER BY nav_date,transaction_id) as cumulative_units from {MF_CLIENT}.{TRANSACTION_TABLE} where folio_number = '(folioNumber)' and scheme_code = '(schemeCode)' ORDER BY nav_date;"
+CLIENT_TRANSACTION_DETAILS = f"SELECT nav_date, concat(transaction_type,transaction_suffix), units, nav, gross_amount, sum(units) over (PARTITION BY scheme_code ORDER BY nav_date,transaction_id) as cumulative_units from {MF_CLIENT}.{TRANSACTION_TABLE} where folio_number = '(folioNumber)' and scheme_code = '(schemeCode)' and units !=0 ORDER BY nav_date;"
 
 yearly_sum = f"SELECT SUM(gross_amount) as amount, SUM(units) as units, transaction_code, to_char(nav_date, 'YYYY') as year_month FROM mf_reports.consolidated_transactions WHERE pan = '(panNumber)' GROUP BY transaction_code, year_month ORDER BY year_month;"
 

@@ -6,7 +6,7 @@ setup(
     packages=[],
     author='PiyushSawhney',
     python_requires='>=3.8',
-    install_requires=['psycopg2', 'openpyxl', 'jupyterlab', 'ipynb', 'pandas'],
+    install_requires=['psycopg2', 'openpyxl', 'jupyterlab', 'ipynb', 'pandas','pillow','pyinstaller'],
     author_email='piyush94.14@gmail.com',
     description='Python project creating reports for MF Transactions'
 )
