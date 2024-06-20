@@ -30,7 +30,7 @@ def create_summary_sheet(pan, investor_name=None):
     summary.append(("PAN", pan))
     summary.append(())
     summary.append(
-        ("Folio Number", "Scheme Name", "Cost Value", "Redemptions", "Switch In", "Switch Out", "Current Value",
+        ("Folio Number", "Scheme Name", "Purchases", "Redemptions", "Switch In", "Switch Out", "Current Value",
          "Total Units", "Returns"))
     max_row = f"{summary.max_row}:{summary.max_row}"
     for cell in summary[max_row]:
